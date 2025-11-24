@@ -42,7 +42,6 @@ public class SecurityConfig {
             // Configurar autorización de requests
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (sin autenticación)
-                .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 
                 // Todos los demás endpoints requieren autenticación

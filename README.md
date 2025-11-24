@@ -60,23 +60,7 @@ El servidor estará disponible en: `http://localhost:8081`
 
 ## 🧪 Probar el Backend
 
-### 1. Health Check (Público - Sin Token)
-
-```bash
-curl http://localhost:8081/api/health
-```
-
-Respuesta esperada:
-```json
-{
-  "status": "ok",
-  "service": "backend-servicios",
-  "timestamp": "2025-11-24T...",
-  "mensaje": "Backend de Servicios está funcionando correctamente"
-}
-```
-
-### 2. Obtener Token JWT del Backend de Gestión
+### 1. Obtener Token JWT del Backend de Gestión
 
 Primero, necesitas autenticarte en el backend de gestión:
 
@@ -101,7 +85,7 @@ Respuesta (guarda el `token`):
 }
 ```
 
-### 3. Usar el Token en el Backend de Servicios
+### 2. Usar el Token en el Backend de Servicios
 
 #### Obtener Perfil (Requiere Token)
 
@@ -161,7 +145,6 @@ curl -X DELETE http://localhost:8081/api/clientes/1 \
 ## 🔐 Seguridad
 
 ### Endpoints Públicos (Sin Token)
-- `GET /api/health` - Health check
 - `GET /api/public/**` - Información pública
 
 ### Endpoints Protegidos (Requieren Token)
@@ -203,7 +186,6 @@ backend-app-servicios/
 │   ├── util/
 │   │   └── JwtUtil.java                    # Utilidad para JWT
 │   ├── controllers/
-│   │   ├── HealthController.java           # Health checks
 │   │   └── ClienteController.java          # Ejemplo de controlador
 │   ├── entities/                           # Tus entidades JPA
 │   ├── repositories/                       # Repositorios Spring Data
