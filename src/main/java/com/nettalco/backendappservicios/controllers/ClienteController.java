@@ -1,10 +1,13 @@
 package com.nettalco.backendappservicios.controllers;
 
 import com.nettalco.backendappservicios.security.UserDetails;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +21,27 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class ClienteController {
     
+    @Autowired(required = false)
+    private RestTemplate restTemplate;
+    
+    @Value("${backend.gestion.url:http://154.38.186.149:8080/gestion}")
+    private String backendGestionUrl;
+    
     /**
      * Método auxiliar para obtener los detalles del usuario autenticado
      */
     private UserDetails getUserDetails() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (UserDetails) auth.getDetails();
+    }
+    
+    /**
+     * Obtener el token JWT del request actual
+     */
+    private String getTokenFromRequest() {
+        // El token debería estar en el SecurityContext, pero por ahora
+        // retornamos null y usamos solo los datos del UserDetails
+        return null;
     }
     
     /**
@@ -48,9 +66,28 @@ public class ClienteController {
         
         Map<String, Object> response = new HashMap<>();
         response.put("idUsuario", userDetails.getIdUsuario());
+        response.put("idRol", userDetails.getIdRol());
         response.put("username", userDetails.getUsername());
-        response.put("rol", userDetails.getNombreRol());
-        response.put("mensaje", "Token válido - Usuario autenticado");
+        response.put("nombreRol", userDetails.getNombreRol());
+        
+        // Intentar obtener datos adicionales del backend de gestión
+        // Si falla, se dejan como null
+        try {
+            if (restTemplate != null) {
+                // El login response ya tiene todos los datos, pero aquí solo tenemos el JWT
+                // Por ahora, los campos adicionales se dejan como null
+                // En una implementación completa, se podría consultar al backend de gestión
+                // usando el idUsuario del token
+            }
+        } catch (Exception e) {
+            // Si falla la consulta, continuar con los datos del JWT
+        }
+        
+        // Campos que no están en el JWT - se pueden obtener del login response
+        // Por ahora se dejan como null, el frontend puede usar los datos del login
+        response.put("email", null);
+        response.put("nombreCompleto", null);
+        response.put("fechaUltimoAcceso", null);
         
         return ResponseEntity.ok(response);
     }
