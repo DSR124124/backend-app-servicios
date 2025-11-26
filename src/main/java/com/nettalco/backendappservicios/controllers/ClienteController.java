@@ -27,9 +27,9 @@ public class ClienteController {
     }
     
     /**
-     * Health check público
+     * Health check público - acepta GET y HEAD
      */
-    @GetMapping("/health")
+    @RequestMapping(value = "/health", method = {RequestMethod.GET, RequestMethod.HEAD})
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of(
             "status", "ok",

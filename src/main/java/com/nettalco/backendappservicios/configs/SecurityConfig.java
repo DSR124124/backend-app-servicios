@@ -43,6 +43,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (sin autenticación)
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/health").permitAll() // Health check simple público
                 .requestMatchers("/api/clientes/health").permitAll() // Health check público
                 .requestMatchers("/api/versiones-terminos/actual").permitAll() // Términos y condiciones público
                 .requestMatchers("/api/versiones-terminos/**").permitAll() // Todas las versiones de términos públicas
