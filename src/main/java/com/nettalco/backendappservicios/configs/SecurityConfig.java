@@ -43,8 +43,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (sin autenticación)
                 .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/clientes/health").permitAll() // Health check público
                 .requestMatchers("/api/versiones-terminos/actual").permitAll() // Términos y condiciones público
                 .requestMatchers("/api/versiones-terminos/**").permitAll() // Todas las versiones de términos públicas
+                .requestMatchers("/actuator/health").permitAll() // Health check de Spring Boot Actuator (si está habilitado)
                 
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
@@ -57,23 +59,45 @@ public class SecurityConfig {
     }
     
     /**
-     * Configuración de CORS para permitir peticiones desde Flutter
+     * Configuración de CORS para permitir peticiones desde Flutter y web
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permitir todos los orígenes (en producción, especificar dominios específicos)
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        // Permitir todos los orígenes usando allowedOriginPatterns (compatible con allowCredentials)
+        // Para producción, especificar dominios específicos:
+        // configuration.setAllowedOrigins(Arrays.asList("https://edugen.brianuceda.xyz", "https://app.example.com"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         
         // Permitir todos los métodos HTTP
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         
-        // Permitir todos los headers
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // Permitir todos los headers importantes
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"
+        ));
+        
+        // Headers expuestos al cliente
+        configuration.setExposedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "Access-Control-Allow-Origin",
+            "Access-Control-Allow-Credentials"
+        ));
         
         // No permitir credenciales cuando se usa "*" en origins
+        // Si necesitas credenciales, especifica dominios específicos arriba
         configuration.setAllowCredentials(false);
+        
+        // Cache de preflight requests (1 hora)
+        configuration.setMaxAge(3600L);
         
         // Aplicar configuración a todos los endpoints
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
