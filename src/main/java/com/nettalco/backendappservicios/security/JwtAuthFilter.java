@@ -26,6 +26,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
     
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Excluir endpoints públicos del filtro JWT
+        return path.startsWith("/api/public/") 
+            || path.startsWith("/api/versiones-terminos/actual")
+            || path.startsWith("/api/versiones-terminos");
+    }
+    
+    @Override
     protected void doFilterInternal(HttpServletRequest request, 
                                   HttpServletResponse response, 
                                   FilterChain chain)

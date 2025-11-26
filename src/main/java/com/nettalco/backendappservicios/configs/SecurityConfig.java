@@ -43,7 +43,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Endpoints públicos (sin autenticación)
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/servicios/**").permitAll() // Servicios públicos
+                .requestMatchers("/api/versiones-terminos/actual").permitAll() // Términos y condiciones público
+                .requestMatchers("/api/versiones-terminos/**").permitAll() // Todas las versiones de términos públicas
                 
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()

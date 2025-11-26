@@ -28,10 +28,15 @@ public class VersionTerminosService implements IVersionTerminosService {
     }
     
     @Override
+    public Optional<VersionTerminos> obtenerVersionActual() {
+        return repository.findByEsVersionActualTrueAndEstado(VersionTerminos.EstadoVersion.ACTIVA.name());
+    }
+    
+    @Override
     public VersionTerminos crear(VersionTerminos version) {
         // Si es la versión actual, desactivar las anteriores
         if (version.getEsVersionActual() != null && version.getEsVersionActual()) {
-            repository.findByEsVersionActualTrueAndEstado(VersionTerminos.EstadoVersion.ACTIVA)
+            repository.findByEsVersionActualTrueAndEstado(VersionTerminos.EstadoVersion.ACTIVA.name())
                 .ifPresent(versionAnterior -> {
                     versionAnterior.setEsVersionActual(false);
                     versionAnterior.setEstado(VersionTerminos.EstadoVersion.ARCHIVADA);
@@ -57,7 +62,7 @@ public class VersionTerminosService implements IVersionTerminosService {
             
             // Si se marca como actual, desactivar las demás
             if (version.getEsVersionActual() != null && version.getEsVersionActual()) {
-                repository.findByEsVersionActualTrueAndEstado(VersionTerminos.EstadoVersion.ACTIVA)
+                repository.findByEsVersionActualTrueAndEstado(VersionTerminos.EstadoVersion.ACTIVA.name())
                     .ifPresent(v -> {
                         if (!v.getIdVersion().equals(id)) {
                             v.setEsVersionActual(false);

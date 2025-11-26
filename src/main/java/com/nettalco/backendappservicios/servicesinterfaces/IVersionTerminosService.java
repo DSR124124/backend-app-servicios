@@ -10,6 +10,8 @@ public interface IVersionTerminosService {
     
     Optional<VersionTerminos> obtenerPorId(Integer id);
     
+    Optional<VersionTerminos> obtenerVersionActual();
+    
     VersionTerminos crear(VersionTerminos version);
     
     VersionTerminos actualizar(Integer id, VersionTerminos version);

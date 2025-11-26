@@ -39,7 +39,16 @@ public class VersionTerminosController {
         return ResponseEntity.ok(response);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/actual")
+    public ResponseEntity<?> obtenerVersionActual() {
+        Optional<VersionTerminos> version = service.obtenerVersionActual();
+        if (version.isPresent()) {
+            return ResponseEntity.ok(convertToResponseDTO(version.get()));
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Integer id) {
         Optional<VersionTerminos> version = service.obtenerPorId(id);
         if (version.isPresent()) {
