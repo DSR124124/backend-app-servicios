@@ -77,5 +77,10 @@ public class VersionPrivacidadService implements IVersionPrivacidadService {
     public void eliminar(Integer id) {
         repository.deleteById(id);
     }
+    
+    @Override
+    public List<Object[]> findFirstByOrderByFechaVigenciaInicioDesc() {
+        return repository.findFirstByOrderByFechaVigenciaInicioDesc();
+    }
 }
 

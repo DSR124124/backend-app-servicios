@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/clientes/health").permitAll() // Health check público
                 .requestMatchers("/api/versiones-terminos/actual").permitAll() // Términos y condiciones público
                 .requestMatchers("/api/versiones-terminos/**").permitAll() // Todas las versiones de términos públicas
+                .requestMatchers("/api/versiones-privacidad/actual").permitAll() // Política de privacidad público
+                .requestMatchers("/api/versiones-privacidad/**").permitAll() // Todas las versiones de privacidad públicas
                 .requestMatchers("/actuator/health").permitAll() // Health check de Spring Boot Actuator (si está habilitado)
                 
                 // Todos los demás endpoints requieren autenticación

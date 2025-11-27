@@ -6,6 +6,7 @@ import com.nettalco.backendappservicios.entities.VersionPrivacidad;
 import com.nettalco.backendappservicios.security.UserDetails;
 import com.nettalco.backendappservicios.servicesinterfaces.IVersionPrivacidadService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,36 @@ public class VersionPrivacidadController {
     private UserDetails getUserDetails() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (UserDetails) auth.getDetails();
+    }
+    
+    @GetMapping("/actual")
+    public ResponseEntity<VersionPrivacidadResponseDTO> getVersionActual() {
+        List<Object[]> rawData = service.findFirstByOrderByFechaVigenciaInicioDesc();
+        
+        if (rawData == null || rawData.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        
+        // Tomamos el primer elemento ya que la consulta devuelve solo uno (LIMIT 1)
+        Object[] data = rawData.get(0);
+        VersionPrivacidadResponseDTO dto = new VersionPrivacidadResponseDTO();
+
+        // Parsing and setting values according to DTO fields
+        dto.setIdVersion(convertirAInteger(data[0]));
+        dto.setNumeroVersion(convertirAString(data[1]));
+        dto.setTitulo(convertirAString(data[2]));
+        dto.setContenido(convertirAString(data[3]));
+        dto.setResumenCambios(convertirAString(data[4]));
+        dto.setFechaCreacion(convertirALocalDateTime(data[5]));
+        dto.setFechaVigenciaInicio(convertirALocalDateTime(data[6]));
+        dto.setFechaVigenciaFin(convertirALocalDateTime(data[7]));
+        dto.setEsVersionActual(convertirABoolean(data[8]));
+        dto.setEstado(convertirAString(data[9]));
+        dto.setIdUsuarioCreador(convertirAInteger(data[10]));
+        dto.setNombreUsuarioCreador(convertirAString(data[11]));
+        dto.setFechaModificacion(convertirALocalDateTime(data[12]));
+
+        return ResponseEntity.ok(dto);
     }
     
     @GetMapping
@@ -121,6 +152,44 @@ public class VersionPrivacidadController {
             version.setEstado(VersionPrivacidad.EstadoVersion.valueOf(dto.getEstado()));
         }
         return version;
+    }
+    
+    // Métodos auxiliares para conversión de tipos
+    private Integer convertirAInteger(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue();
+        }
+        return null;
+    }
+
+    private String convertirAString(Object obj) {
+        return obj != null ? obj.toString() : null;
+    }
+
+    private Boolean convertirABoolean(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof Boolean) {
+            return (Boolean) obj;
+        }
+        if (obj instanceof Number) {
+            return ((Number) obj).intValue() != 0;
+        }
+        return null;
+    }
+
+    private LocalDateTime convertirALocalDateTime(Object obj) {
+        if (obj == null) return null;
+        if (obj instanceof LocalDateTime) {
+            return (LocalDateTime) obj;
+        }
+        if (obj instanceof java.sql.Timestamp) {
+            return ((java.sql.Timestamp) obj).toLocalDateTime();
+        }
+        if (obj instanceof java.sql.Date) {
+            return ((java.sql.Date) obj).toLocalDate().atStartOfDay();
+        }
+        return null;
     }
 }
 

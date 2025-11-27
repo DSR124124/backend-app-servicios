@@ -15,5 +15,7 @@ public interface IVersionPrivacidadService {
     VersionPrivacidad actualizar(Integer id, VersionPrivacidad version);
     
     void eliminar(Integer id);
+    
+    List<Object[]> findFirstByOrderByFechaVigenciaInicioDesc();
 }
 

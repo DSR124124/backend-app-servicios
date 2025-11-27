@@ -31,7 +31,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Excluir endpoints públicos del filtro JWT
         return path.startsWith("/api/public/") 
             || path.startsWith("/api/versiones-terminos/actual")
-            || path.startsWith("/api/versiones-terminos");
+            || path.startsWith("/api/versiones-terminos")
+            || path.startsWith("/api/versiones-privacidad/actual")
+            || path.startsWith("/api/versiones-privacidad");
     }
     
     @Override
