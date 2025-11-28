@@ -51,6 +51,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/versiones-privacidad/**").permitAll() // Todas las versiones de privacidad públicas
                 .requestMatchers("/actuator/health").permitAll() // Health check de Spring Boot Actuator (si está habilitado)
                 
+                // Endpoints de transporte (públicos para acceso sin restricciones)
+                // NOTA: Para producción, considerar autenticación o tokens específicos para GPS
+                .requestMatchers("/api/gps/**").permitAll() // GPS público para alto throughput
+                .requestMatchers("/api/rutas/**").permitAll() // Rutas públicas para acceso libre
+                .requestMatchers("/api/trips/**").permitAll() // Viajes públicos para seguimiento
+                
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
             )

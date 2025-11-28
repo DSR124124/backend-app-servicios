@@ -33,7 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             || path.startsWith("/api/versiones-terminos/actual")
             || path.startsWith("/api/versiones-terminos")
             || path.startsWith("/api/versiones-privacidad/actual")
-            || path.startsWith("/api/versiones-privacidad");
+            || path.startsWith("/api/versiones-privacidad")
+            || path.startsWith("/api/gps/") // GPS público
+            || path.startsWith("/api/rutas/") // Rutas públicas
+            || path.startsWith("/api/trips/") // Viajes públicos
+            || path.startsWith("/api/health") // Health check
+            || path.startsWith("/actuator/health"); // Actuator health
     }
     
     @Override
