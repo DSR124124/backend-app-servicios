@@ -4,7 +4,7 @@
 # ============================================
 
 # Etapa 1: Build
-FROM maven:3.9.5-eclipse-temurin-17-alpine AS build
+FROM maven:3.9.8-eclipse-temurin-21-alpine AS build
 
 # Establecer directorio de trabajo
 WORKDIR /app
@@ -25,7 +25,7 @@ RUN ./mvnw clean package -DskipTests -B
 
 # ============================================
 # Etapa 2: Runtime
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Instalar wget para health check
 RUN apk add --no-cache wget
