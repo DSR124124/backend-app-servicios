@@ -4,9 +4,11 @@ import com.nettalco.backendappservicios.dtos.BusLocationResponse;
 import com.nettalco.backendappservicios.dtos.TripDetailResponse.RoutePointResponse;
 import com.nettalco.backendappservicios.dtos.TripDetailResponse;
 import com.nettalco.backendappservicios.dtos.ViajeActivoResponse;
+import com.nettalco.backendappservicios.entities.ConductorDetalle;
 import com.nettalco.backendappservicios.entities.RutaPunto;
 import com.nettalco.backendappservicios.entities.UbicacionTiempoReal;
 import com.nettalco.backendappservicios.entities.Viaje;
+import com.nettalco.backendappservicios.repositories.ConductorDetalleRepository;
 import com.nettalco.backendappservicios.repositories.UbicacionTiempoRealRepository;
 import com.nettalco.backendappservicios.repositories.ViajeRepository;
 import com.nettalco.backendappservicios.servicesinterfaces.IViajeService;
@@ -27,6 +29,9 @@ public class ViajeService implements IViajeService {
     
     @Autowired
     private UbicacionTiempoRealRepository ubicacionRepository;
+    
+    @Autowired
+    private ConductorDetalleRepository conductorDetalleRepository;
     
     @Override
     @Transactional(readOnly = true)
@@ -69,10 +74,20 @@ public class ViajeService implements IViajeService {
         String busPlate = viaje.getBus() != null ? viaje.getBus().getPlaca() : "";
         String busModel = viaje.getBus() != null ? viaje.getBus().getModelo() : null;
         
-        // Información del conductor (por ahora solo el ID, ya que está en otra BD)
-        // En producción, deberías hacer una llamada al otro microservicio o tener una vista
-        String driverName = "Conductor " + viaje.getIdConductor(); // Placeholder
-        String driverPhoto = null; // Placeholder
+        // Intentar obtener información del conductor desde ConductorDetalle
+        String driverName = "Conductor " + viaje.getIdConductor(); // Default
+        if (viaje.getIdConductor() != null) {
+            Optional<ConductorDetalle> conductorOpt = conductorDetalleRepository
+                .findByIdUsuarioGestion(viaje.getIdConductor());
+            if (conductorOpt.isPresent()) {
+                ConductorDetalle conductor = conductorOpt.get();
+                // Si hay licencia, usarla como identificador más descriptivo
+                if (conductor.getLicenciaNumero() != null && !conductor.getLicenciaNumero().isEmpty()) {
+                    driverName = "Conductor " + conductor.getLicenciaNumero();
+                }
+            }
+        }
+        String driverPhoto = null; // Placeholder - se puede obtener desde otro servicio si es necesario
         
         // Convertir puntos de la ruta
         List<RoutePointResponse> routePoints = viaje.getRuta().getPuntos().stream()
@@ -119,7 +134,20 @@ public class ViajeService implements IViajeService {
     private ViajeActivoResponse convertirAViajeActivoResponse(Viaje viaje) {
         String busPlate = viaje.getBus() != null ? viaje.getBus().getPlaca() : "";
         String busModel = viaje.getBus() != null ? viaje.getBus().getModelo() : null;
-        String driverName = "Conductor " + viaje.getIdConductor(); // Placeholder
+        
+        // Intentar obtener el nombre del conductor desde ConductorDetalle
+        String driverName = "Conductor " + viaje.getIdConductor(); // Default
+        if (viaje.getIdConductor() != null) {
+            Optional<ConductorDetalle> conductorOpt = conductorDetalleRepository
+                .findByIdUsuarioGestion(viaje.getIdConductor());
+            if (conductorOpt.isPresent()) {
+                ConductorDetalle conductor = conductorOpt.get();
+                // Si hay licencia, usarla como identificador más descriptivo
+                if (conductor.getLicenciaNumero() != null && !conductor.getLicenciaNumero().isEmpty()) {
+                    driverName = "Conductor " + conductor.getLicenciaNumero();
+                }
+            }
+        }
         
         return new ViajeActivoResponse(
             viaje.getIdViaje(),
